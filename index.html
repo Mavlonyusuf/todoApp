@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        list-style-type: none;
+        text-decoration: none;
+        /* color: white; */
+      }
+      .ToDoList {
+        background-color: #0d0714;
+        /* padding: ; */
+        width: 100vw;
+        height: 100vh;
+        /* border-radius: 48px; */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .todo-int {
+        margin: 50px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+      }
+      .todoAdd-p {
+        color: white;
+        margin: 10px 0;
+      }
+      .int {
+        padding: 6px 10px;
+        background-color: #0d0714;
+        border-radius: 8px;
+        width: 381px;
+        height: 40px;
+        border: 1px solid #290f4a;
+        color: white;
+      }
+      .add-btn {
+        color: white;
+        height: 40px;
+        width: 40px;
+        padding: 0 2px;
+        background-color: #9e78cf;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .add-btn:hover {
+        color: rgba(240, 240, 240, 0.703);
+        background-color: #290f4a;
+      }
+      .addli {
+        display: flex;
+        align-items: center;
+        background-color: #15101c;
+        width: 432px;
+        height: 75px;
+        border-radius: 10px;
+        justify-content: space-between;
+        color: #9e78cf;
+        padding: 0 15px;
+      }
+      .ul {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+      }
+      .addli svg:hover {
+        color: #290f4a;
+      }
+      .check-btn,
+      .delete-btn,
+      .update-btn {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+      }
+      .check-btn img,
+      .delete-btn img {
+        width: 100%;
+        height: 100%;
+      }
+      .li-p {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .task-id {
+        font-weight: 700;
+      }
+      .done-task {
+        color: greenyellow;
+        text-decoration: line-through;
+      }
+      .no-active {
+        opacity: 0.5;
+        filter: blur(5px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ToDoList">
+      <div class="todo-int">
+        <input class="int" type="text" placeholder="Add a new task" />
+        <button class="add-btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path fill="currentColor" d="M5 13v-1h6V6h1v6h6v1h-6v6h-1v-6z" />
+          </svg>
+        </button>
+      </div>
+      <div class="todoAdd">
+        <p class="todoAdd-p">Task to do - 4</p>
+        <ul class="ul"></ul>
+      </div>
+    </div>
+    <script src="./main.js"></script>
+  </body>
+</html>
