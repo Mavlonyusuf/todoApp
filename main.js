@@ -4,17 +4,20 @@ const todoLists = document.querySelector(".ul");
 const completebtn = document.querySelector(".check-btn");
 const deletebtn = document.querySelector(".delete-btn");
 const addList = document.querySelector(".addli");
-let todosArray = JSON.parse(localStorage.getItem("todos")) || [];
+let todosArray = [];
 
 let storageTodos = JSON.parse(localStorage.getItem("todos")) ?? [];
 addEventListener("DOMContentLoaded", () => {
-  //   console.log(storageTodos);
-
-  storageTodos.map((todo) => {
-    let newtodo = document.createElement("li");
-    newtodo.innerHTML = `<li class="addli" id="${todo.id}">
+  fetch("http://localhost:3000/todos")
+    .then((response) => response.json())
+    .then((data) => {
+      todosArray = data;
+      data.map((todo, index) => {
+        let newTodo = document.createElement("li");
+        newTodo.innerHTML = `
+        <li class="addli" id="${todo.id}">
             <p class="li-p">
-              <span class="task-id">${todo.id} .</span
+              <span class="task-id">${index + 1} .</span
               ><span id="text">${todo.title}</span>
             </p>
             <div>
@@ -28,75 +31,72 @@ addEventListener("DOMContentLoaded", () => {
               <img src="./update.svg" id="update" alt="" />
               </button>
             </div>
-          </li>
-  `;
-    todoLists.append(newtodo);
-  });
+          </li>`;
+        todoLists.append(newTodo);
+      });
+    })
+    .catch((error) => console.error(error));
+
+  //   console.log(storageTodos);
+  // storageTodos.map((todo) => {
+  //   let newtodo = document.createElement("li");
+  //   newtodo.innerHTML = `<li class="addli" id="${todo.id}">
+  //           <p class="li-p">
+  //             <span class="task-id">${todo.id} .</span
+  //             ><span id="text">${todo.title}</span>
+  //           </p>
+  //           <div>
+  //             <button class="check-btn">
+  //               <img src="./complete.svg" id="complete" alt="" />
+  //             </button>
+  //             <button class="delete-btn">
+  //               <img src="./delete.svg" id="delete" alt="" />
+  //             </button>
+  //             <button class="update-btn">
+  //             <img src="./update.svg" id="update" alt="" />
+  //             </button>
+  //           </div>
+  //         </li>
+  // `;
+  //   todoLists.append(newtodo);
+  // });
 });
 input.addEventListener("keydown", (e) => {
   if (e.key == "Enter") {
-    const todoList = document.createElement("li");
-    todoList.innerHTML = `
-    <li class="addli" id="${todosArray.length + 1}">
-    <p class="li-p" >
-              <span class="task-id">${todosArray.length + 1} .</span
-              ><span id="text">${input.value}</span>
-              </p>
-              <div>
-              <button class="check-btn">
-              <img src="./complete.svg" id="complete" alt="" />
-              </button>
-              <button class="delete-btn">
-              <img src="./delete.svg" id="delete" alt="" />
-              </button>
-              <button class="update-btn">
-              <img src="./update.svg" id="delete" alt="" />
-              </button>
-              </div>
-              </li>
-              `;
-    todosArray.push({ id: todosArray.length + 1, title: input.value });
-    todoLists.append(todoList);
-    localStorage.setItem("todos", JSON.stringify(todosArray));
+    let formData = {
+      title: input.value,
+      completed: false,
+    };
+    fetch("http://localhost:3000/todos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
     input.value = "";
   }
 });
 addBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  todosArray.push({ id: todosArray.length + 1, title: input.value });
 
   if (input.value.trim().length > 2) {
-    const todoList = document.createElement("li");
-    todoList.innerHTML = `
-    <li class="addli" id="${todosArray.length + 1}">
-    <p class="li-p" >
-              <span class="task-id">${todosArray.length + 1} .</span
-              ><span id="text">${input.value}</span>
-              </p>
-              <div>
-              <button class="check-btn">
-              <img src="./complete.svg" id="complete" alt="" />
-              </button>
-              <button class="delete-btn">
-              <img src="./delete.svg" id="delete" alt="" />
-              </button>
-              <button class="update-btn">
-              <img src="./update.svg" id="update" alt="" />
-              </button>
-              </div>
-              </li>
-              `;
-    todoLists.append(todoList);
-    localStorage.setItem("todos", JSON.stringify(todosArray));
+    let formData = {
+      title: input.value,
+      completed: false,
+    };
+    fetch("http://localhost:3000/todos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
     input.value = "";
   }
   input.value = "";
 });
-// completebtn.addEventListener("click", (e) => {
-//   e.stopPropagation();
 
-//   console.log("complete btn clicked");
-// });
 todoLists.addEventListener("click", (e) => {
   if (e.target.id == "complete") {
     e.target.parentElement.parentElement.parentElement.classList.toggle(
@@ -104,32 +104,41 @@ todoLists.addEventListener("click", (e) => {
     );
   }
   if (e.target.id == "delete") {
-    todosArray = todosArray.filter(
-      (todo) => todo.id != e.target.parentElement.parentElement.parentElement.id
+    fetch(
+      `http://localhost:3000/todos/${e.target.parentElement.parentElement.parentElement.id}`,
+      {
+        method: "DELETE",
+      }
     );
-    todosArray = todosArray.map((todo, index) => ({
-      ...todo,
-      id: index + 1,
-    }));
-
-    localStorage.setItem("todos", JSON.stringify(todosArray));
-    e.target.parentElement.parentElement.parentElement.remove();
+    console.log(e.target.parentElement.parentElement.parentElement.id);
   }
   if (e.target.id == "update") {
-    let targetTodo = todosArray.find(
-      (todo) => todo.id == e.target.parentElement.parentElement.parentElement.id
-    );
-    input.focus();
-    input.value = targetTodo.title;
-    e.target.parentElement.parentElement.parentElement.remove();
-    todosArray = todosArray.filter(
-      (todo) => todo.id != e.target.parentElement.parentElement.parentElement.id
-    );
-    todosArray = todosArray.map((todo, index) => ({
-      ...todo,
-      id: index + 1,
-    }));
+    e.preventDefault();
+    let targetTodo = {};
+    fetch(
+      `http://localhost:3000/todos/${e.target.parentElement.parentElement.parentElement.id}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        targetTodo = data;
+        input.focus();
+        input.value = targetTodo.title;
+        // console.log(targetTodo);
+      });
 
-    localStorage.setItem("todos", JSON.stringify(todosArray));
+    let updateFormData = {
+      id: e.target.parentElement.parentElement.parentElement.id,
+      title: input.value,
+    };
+    fetch(
+      `http://localhost:3000/todos/${e.target.parentElement.parentElement.parentElement.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json", // Ma'lumot turi JSON ekanligini aytadi
+        },
+        body: JSON.stringify(updateFormData),
+      }
+    );
   }
 });
