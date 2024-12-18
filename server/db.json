@@ -1,12 +1,13 @@
 {
   "todos": [
     {
-      "id": "9f0a",
-      "title": ""
+      "id": "afb2",
+      "title": "task12asd"
     },
     {
-      "id": "266c",
-      "title": ""
+      "id": "fd26",
+      "title": "task2",
+      "completed": false
     }
   ]
 }

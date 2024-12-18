@@ -6,7 +6,6 @@ const deletebtn = document.querySelector(".delete-btn");
 const addList = document.querySelector(".addli");
 let todosArray = [];
 
-let storageTodos = JSON.parse(localStorage.getItem("todos")) ?? [];
 addEventListener("DOMContentLoaded", () => {
   fetch("http://localhost:3000/todos")
     .then((response) => response.json())
@@ -77,25 +76,6 @@ input.addEventListener("keydown", (e) => {
     input.value = "";
   }
 });
-addBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-
-  if (input.value.trim().length > 2) {
-    let formData = {
-      title: input.value,
-      completed: false,
-    };
-    fetch("http://localhost:3000/todos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    input.value = "";
-  }
-  input.value = "";
-});
 
 todoLists.addEventListener("click", (e) => {
   if (e.target.id == "complete") {
@@ -113,32 +93,63 @@ todoLists.addEventListener("click", (e) => {
     console.log(e.target.parentElement.parentElement.parentElement.id);
   }
   if (e.target.id == "update") {
-    e.preventDefault();
-    let targetTodo = {};
-    fetch(
-      `http://localhost:3000/todos/${e.target.parentElement.parentElement.parentElement.id}`
-    )
+    e.preventDefault(); // Sahifani yangilanishini to'xtatadi
+
+    // Tanlangan elementni olish
+    let targetTodoId = e.target.parentElement.parentElement.parentElement.id;
+
+    // Ma'lumotni olish va inputni to'ldirish
+    fetch(`http://localhost:3000/todos/${targetTodoId}`)
       .then((response) => response.json())
       .then((data) => {
-        targetTodo = data;
+        // Inputni ma'lumot bilan to'ldirish
         input.focus();
-        input.value = targetTodo.title;
-        // console.log(targetTodo);
-      });
+        input.value = data.title;
 
-    let updateFormData = {
-      id: e.target.parentElement.parentElement.parentElement.id,
-      title: input.value,
-    };
-    fetch(
-      `http://localhost:3000/todos/${e.target.parentElement.parentElement.parentElement.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json", // Ma'lumot turi JSON ekanligini aytadi
-        },
-        body: JSON.stringify(updateFormData),
+        // Yangi qiymatni o'zgartirish
+        input.addEventListener("input", () => {
+          // Input qiymatini yangilash
+          let updatedTodo = {
+            id: targetTodoId,
+            title: input.value, // Input qiymatini o'qiymiz
+          };
+          addBtn.addEventListener("click", () => {
+            console.log(todosArray);
+
+            fetch(`http://localhost:3000/todos/${targetTodoId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(updatedTodo), // Yangilangan ma'lumotni yuborish
+            })
+              .then((response) => response.json())
+              .then((updatedData) => {
+                console.log("Updated:", updatedData); // Natijani konsolda ko'rsatish
+              });
+          });
+          // PUT so'rov yuborish
+        });
+      });
+  } else {
+    addBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      if (input.value.trim().length > 2) {
+        let formData = {
+          title: input.value,
+          completed: false,
+        };
+        fetch("http://localhost:3000/todos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+        input.value = "";
       }
-    );
+      input.value = "";
+    });
   }
 });
